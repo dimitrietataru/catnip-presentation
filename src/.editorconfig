@@ -777,3 +777,11 @@ dotnet_diagnostic.CA2257.severity = warning
 dotnet_diagnostic.CA2258.severity = warning
 dotnet_diagnostic.CA2259.severity = warning
 dotnet_diagnostic.CA2260.severity = warning
+
+# Exceptions
+[*.cs]
+dotnet_diagnostic.CA1005.severity = silent
+dotnet_diagnostic.CA2007.severity = silent
+
+[**[Cc]ontroller{s,}**.cs]
+dotnet_naming_rule.method_async_should_be_ends_with_async.severity = none
