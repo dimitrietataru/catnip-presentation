@@ -6,6 +6,7 @@ using CatNip.Domain.Services;
 
 namespace CatNip.Presentation.Controllers;
 
+[ApiController]
 public abstract class AceController<TService, TModel, TId, TFiltering> : CrudController<TService, TModel, TId>
     where TService : IAceService<TModel, TId, TFiltering>
     where TModel : IModel<TId>

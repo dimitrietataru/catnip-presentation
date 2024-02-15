@@ -52,7 +52,7 @@ public abstract class CrudController<TService, TModel, TId> : ControllerBase
         return Created(new Uri($"/{result.Id}", UriKind.Relative), result);
     }
 
-    [HttpPost]
+    [HttpPut]
     [Route("{id}")]
     public virtual async Task<IActionResult> Update(
         [FromRoute] TId id,
@@ -67,12 +67,12 @@ public abstract class CrudController<TService, TModel, TId> : ControllerBase
                 });
         }
 
-        await Service.UpdateAsync(model, cancellation);
+        await Service.UpdateAsync(id, model, cancellation);
 
         return NoContent();
     }
 
-    [HttpPost]
+    [HttpDelete]
     [Route("{id}")]
     public virtual async Task<IActionResult> Delete(
         [FromRoute] TId id,
