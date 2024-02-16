@@ -40,8 +40,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering> : CrudCon
         [FromQuery] TFiltering filter,
         CancellationToken cancellation)
     {
-        var request = new QueryRequest<TFiltering>(filter);
-        int count = await Service.CountAsync(request, cancellation);
+        int count = await Service.CountAsync(filter, cancellation);
 
         return Ok(count);
     }
