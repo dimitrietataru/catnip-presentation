@@ -3,6 +3,7 @@ using CatNip.Domain.Query;
 using CatNip.Domain.Query.Filtering;
 using CatNip.Domain.Query.Sorting.Symbols;
 using CatNip.Domain.Services;
+using CatNip.Presentation.Symbols;
 
 namespace CatNip.Presentation.Controllers;
 
@@ -19,7 +20,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering> : CrudCon
     }
 
     [HttpGet]
-    [Route("filter")]
+    [Route(DefaultRoutes.Filter)]
     public virtual async Task<IActionResult> Filter(
         [FromQuery] int? page,
         [FromQuery] int? size,
@@ -35,10 +36,9 @@ public abstract class AceController<TService, TModel, TId, TFiltering> : CrudCon
     }
 
     [HttpGet]
-    [Route("filter/count")]
+    [Route(DefaultRoutes.FilterCount)]
     public virtual async Task<IActionResult> FilterCount(
-        [FromQuery] TFiltering filter,
-        CancellationToken cancellation)
+        [FromQuery] TFiltering filter, CancellationToken cancellation)
     {
         int count = await Service.CountAsync(filter, cancellation);
 
