@@ -5,3 +5,9 @@
 [![NuGet](https://img.shields.io/nuget/v/CatNip.Presentation)](https://www.nuget.org/packages/CatNip.Presentation)
 
 # Presentation Abstractions
+
+### Related projects
+* [catnip-domain](https://github.com/dimitrietataru/catnip-domain)
+* [catnip-application](https://github.com/dimitrietataru/catnip-application)
+* [catnip-infrastructure](https://github.com/dimitrietataru/catnip-infrastructure)
+* [csharp-coding-standards](https://github.com/dimitrietataru/csharp-coding-standards)
