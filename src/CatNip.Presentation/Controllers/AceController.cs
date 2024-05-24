@@ -20,8 +20,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering> : CrudCon
     }
 
     [HttpGet]
-    [Route(DefaultRoutes.Filter)]
-    public virtual async Task<IActionResult> Filter(
+    public virtual async Task<IActionResult> GetAll(
         [FromQuery] int? page,
         [FromQuery] int? size,
         [FromQuery] string? sortBy,
@@ -36,12 +35,30 @@ public abstract class AceController<TService, TModel, TId, TFiltering> : CrudCon
     }
 
     [HttpGet]
-    [Route(DefaultRoutes.FilterCount)]
-    public virtual async Task<IActionResult> FilterCount(
+    [Route(DefaultRoutes.Count)]
+    public virtual async Task<IActionResult> Count(
         [FromQuery] TFiltering filter, CancellationToken cancellation)
     {
         int count = await Service.CountAsync(filter, cancellation);
 
         return Ok(count);
+    }
+
+    /// <summary>
+    ///     Replaced by the <see cref="GetAll"/> action (pagination/sorting/filtering)
+    /// </summary>
+    [NonAction]
+    public sealed override async Task<IActionResult> GetAll(CancellationToken cancellation)
+    {
+        return await base.GetAll(cancellation);
+    }
+
+    /// <summary>
+    ///     Replaced by the <see cref="Count"/> action (filtering)
+    /// </summary>
+    [NonAction]
+    public sealed override async Task<IActionResult> Count(CancellationToken cancellation)
+    {
+        return await base.Count(cancellation);
     }
 }

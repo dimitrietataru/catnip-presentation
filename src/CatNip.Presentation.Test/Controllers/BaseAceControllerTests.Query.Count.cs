@@ -13,20 +13,20 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
 {
-    public virtual async Task GivenFilterCountWhenDataExistsThenReturnsCount()
+    public override async Task GivenCountWhenDataExistsThenReturnsCount()
     {
         // Arrange
-        ArrangeFilterCountOnSuccess();
+        ArrangeCountOnSuccess();
 
         // Act
-        var result = await Controller.FilterCount(
+        var result = await Controller.Count(
             It.IsAny<TFiltering>(), It.IsAny<CancellationToken>());
 
         // Assert
-        AssertFilterCountOnSuccess(result);
+        AssertCountOnSuccess(result);
     }
 
-    protected virtual void ArrangeFilterCountOnSuccess()
+    protected override void ArrangeCountOnSuccess()
     {
         ServiceMock
             .Setup(_ => _.CountAsync(It.IsAny<TFiltering>(), It.IsAny<CancellationToken>()))
@@ -34,7 +34,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
             .Verifiable();
     }
 
-    protected virtual void AssertFilterCountOnSuccess(IActionResult actionResult)
+    protected override void AssertCountOnSuccess(IActionResult actionResult)
     {
         actionResult.Should().NotBeNull().And.BeOfType<OkObjectResult>();
 

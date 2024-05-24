@@ -15,13 +15,13 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
 {
-    public virtual async Task GivenFilterWhenDataExistsThenReturnsData()
+    public override async Task GivenGetAllWhenDataExistsThenReturnsData()
     {
         // Arrange
-        ArrangeFilterOnSuccess();
+        ArrangeGetAllOnSuccess();
 
         // Act
-        var result = await Controller.Filter(
+        var result = await Controller.GetAll(
             page: It.IsAny<int?>(),
             size: It.IsAny<int?>(),
             sortBy: It.IsAny<string?>(),
@@ -30,10 +30,10 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
             cancellation: It.IsAny<CancellationToken>());
 
         // Assert
-        AssertFilterOnSuccess(result);
+        AssertGetAllOnSuccess(result);
     }
 
-    protected virtual void ArrangeFilterOnSuccess()
+    protected override void ArrangeGetAllOnSuccess()
     {
         ServiceMock
             .Setup(_ => _.GetAsync(It.IsAny<QueryRequest<TFiltering>>(), It.IsAny<CancellationToken>()))
@@ -41,7 +41,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
             .Verifiable();
     }
 
-    protected virtual void AssertFilterOnSuccess(IActionResult actionResult)
+    protected override void AssertGetAllOnSuccess(IActionResult actionResult)
     {
         actionResult.Should().NotBeNull().And.BeOfType<OkObjectResult>();
 
