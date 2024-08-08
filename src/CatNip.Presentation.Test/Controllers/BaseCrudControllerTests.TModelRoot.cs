@@ -4,7 +4,7 @@ using CatNip.Presentation.Controllers;
 
 namespace CatNip.Presentation.Test.Controllers;
 
-public abstract partial class BaseCrudControllerTests<TController, TService, TModelRoot, TModel, TId>
+public abstract partial class BaseCrudControllerTests<TController, TService, TModel, TModelRoot, TId>
     : BaseCrudControllerTests<TController, TService, TModel, TId>
     where TController : CrudController<TService, TModel, TModelRoot, TId>
     where TService : class, ICrudService<TModel, TId>
