@@ -8,6 +8,35 @@ using CatNip.Presentation.Symbols;
 namespace CatNip.Presentation.Controllers;
 
 [ApiController]
+public abstract class AceController<TService, TModel, TModelRoot, TId, TFiltering> : AceController<TService, TModel, TId, TFiltering>
+    where TService : IAceService<TModel, TId, TFiltering>
+    where TModel : IModel<TId>
+    where TModelRoot : IModel<TId>
+    where TId : IEquatable<TId>
+    where TFiltering : IFilteringRequest
+{
+    protected AceController(TService service)
+        : base(service)
+    {
+    }
+
+    [HttpGet]
+    public override async Task<IActionResult> GetAll(
+        [FromQuery] int? page,
+        [FromQuery] int? size,
+        [FromQuery] string? sortBy,
+        [FromQuery] SortDirection? sortDirection,
+        [FromQuery] TFiltering filter,
+        CancellationToken cancellation)
+    {
+        var request = new QueryRequest<TFiltering>(filter, page, size, sortBy, sortDirection);
+        var result = await Service.GetAsync<TModelRoot>(request, cancellation);
+
+        return Ok(result);
+    }
+}
+
+[ApiController]
 public abstract class AceController<TService, TModel, TId, TFiltering> : CrudController<TService, TModel, TId>
     where TService : IAceService<TModel, TId, TFiltering>
     where TModel : IModel<TId>

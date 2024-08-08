@@ -5,6 +5,27 @@ using CatNip.Presentation.Symbols;
 namespace CatNip.Presentation.Controllers;
 
 [ApiController]
+public abstract class CrudController<TService, TModel, TModelRoot, TId> : CrudController<TService, TModel, TId>
+    where TService : ICrudService<TModel, TId>
+    where TModel : IModel<TId>
+    where TModelRoot : IModel<TId>
+    where TId : IEquatable<TId>
+{
+    protected CrudController(TService service)
+        : base(service)
+    {
+    }
+
+    [HttpGet]
+    public override async Task<IActionResult> GetAll(CancellationToken cancellation)
+    {
+        var result = await Service.GetAllAsync<TModelRoot>(cancellation);
+
+        return Ok(result);
+    }
+}
+
+[ApiController]
 public abstract class CrudController<TService, TModel, TId> : ControllerBase
     where TService : ICrudService<TModel, TId>
     where TModel : IModel<TId>
