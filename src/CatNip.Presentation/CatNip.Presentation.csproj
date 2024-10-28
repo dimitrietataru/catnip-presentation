@@ -9,7 +9,7 @@
 
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>CatNip.Presentation</PackageId>
-    <Version>2.1.1</Version>
+    <Version>2.2.0</Version>
     <Authors>Dimitrie Tataru</Authors>
     <Company>A C E</Company>
     <Description>Clean Architecture Template - Presentation Abstractions</Description>
