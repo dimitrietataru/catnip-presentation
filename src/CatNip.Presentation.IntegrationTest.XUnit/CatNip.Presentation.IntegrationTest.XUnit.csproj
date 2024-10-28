@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsTestProject>false</IsTestProject>
+
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>CatNip.Presentation.IntegrationTest.XUnit</PackageId>
+    <Version>2.1.1</Version>
+    <Authors>Dimitrie Tataru</Authors>
+    <Company>A C E</Company>
+    <Description>Clean Architecture Template - Presentation Abstractions Integration Test (XUnit)</Description>
+    <PackageTags>clean;architecture;template;presentation;abstractions;test;integration-test;xunit</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.core" Version="2.9.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CatNip.Presentation.IntegrationTest\CatNip.Presentation.IntegrationTest.csproj" />
+  </ItemGroup>
+
+</Project>

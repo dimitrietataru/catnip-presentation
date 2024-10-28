@@ -5,7 +5,9 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatNip.Presentation", "CatNip.Presentation\CatNip.Presentation.csproj", "{89734D43-8C80-423F-AC48-C2299FF02851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatNip.Presentation.IntegrationTest", "CatNip.Presentation.IntegrationTest\CatNip.Presentation.IntegrationTest.csproj", "{65E1DD11-64C0-4D87-A355-32BDAEEC5A68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatNip.Presentation.IntegrationTest", "CatNip.Presentation.IntegrationTest\CatNip.Presentation.IntegrationTest.csproj", "{65E1DD11-64C0-4D87-A355-32BDAEEC5A68}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatNip.Presentation.IntegrationTest.XUnit", "CatNip.Presentation.IntegrationTest.XUnit\CatNip.Presentation.IntegrationTest.XUnit.csproj", "{8F9FB211-8E5A-4103-89DB-80D94BFE607B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatNip.Presentation.Test", "CatNip.Presentation.Test\CatNip.Presentation.Test.csproj", "{DCA9FA00-8CBE-4864-B2AD-2863521C38D1}"
 EndProject
@@ -25,6 +27,10 @@ Global
 		{65E1DD11-64C0-4D87-A355-32BDAEEC5A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65E1DD11-64C0-4D87-A355-32BDAEEC5A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65E1DD11-64C0-4D87-A355-32BDAEEC5A68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F9FB211-8E5A-4103-89DB-80D94BFE607B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F9FB211-8E5A-4103-89DB-80D94BFE607B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F9FB211-8E5A-4103-89DB-80D94BFE607B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F9FB211-8E5A-4103-89DB-80D94BFE607B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DCA9FA00-8CBE-4864-B2AD-2863521C38D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DCA9FA00-8CBE-4864-B2AD-2863521C38D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCA9FA00-8CBE-4864-B2AD-2863521C38D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
