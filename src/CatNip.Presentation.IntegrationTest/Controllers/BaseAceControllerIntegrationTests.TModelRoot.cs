@@ -11,14 +11,22 @@ public abstract partial class BaseAceControllerIntegrationTests<TModel, TModelRo
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
 {
-    protected override async Task AssertGetAllOnSuccessAsync(HttpResponseMessage? response)
+    public override async Task GivenGetAllWhenDataExistsThenReturnsData()
     {
-        response.Should().NotBeNull();
-        response!.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Arrange
+        var uri = new Uri(Endpoint, UriKind.Relative);
 
+        // Act
+        var response = await HttpClient.GetAsync(uri);
         var result = await response.Content.ReadFromJsonAsync<QueryResponse<TModelRoot>>();
-        result.Should().NotBeNull().And.BeOfType<QueryResponse<TModel>>();
-        result!.Items.Should().NotBeNull().And.BeAssignableTo<IEnumerable<TModelRoot>>();
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        result!.Should().NotBeNull();
+        result!.Should().BeOfType<QueryResponse<TModelRoot>>();
+        result!.Items.Should().NotBeNull();
         result!.Items.Should().NotBeEmpty();
+        result!.Items.Should().BeAssignableTo<IEnumerable<TModelRoot>>();
     }
 }

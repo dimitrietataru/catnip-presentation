@@ -8,13 +8,20 @@ public abstract partial class BaseCrudControllerIntegrationTests<TModel, TModelR
     where TModelRoot : IModel<TId>
     where TId : IEquatable<TId>
 {
-    protected override async Task AssertGetAllOnSuccessAsync(HttpResponseMessage? response)
+    public override async Task GivenGetAllWhenDataExistsThenReturnsData()
     {
-        response.Should().NotBeNull();
-        response!.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Arrange
+        var uri = new Uri(Endpoint, UriKind.Relative);
 
+        // Act
+        var response = await HttpClient.GetAsync(uri);
         var result = await response.Content.ReadFromJsonAsync<IEnumerable<TModelRoot>>();
-        result.Should().NotBeNull().And.BeAssignableTo<IEnumerable<TModelRoot>>();
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        result.Should().NotBeNull();
         result.Should().NotBeEmpty();
+        result.Should().BeAssignableTo<IEnumerable<TModelRoot>>();
     }
 }

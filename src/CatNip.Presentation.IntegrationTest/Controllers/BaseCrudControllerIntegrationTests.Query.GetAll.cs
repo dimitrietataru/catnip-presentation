@@ -9,29 +9,17 @@ public abstract partial class BaseCrudControllerIntegrationTests<TModel, TId>
     public virtual async Task GivenGetAllWhenDataExistsThenReturnsData()
     {
         // Arrange
-        var uri = ArrangeGetAllUri();
+        var uri = new Uri(Endpoint, UriKind.Relative);
 
         // Act
         var response = await HttpClient.GetAsync(uri);
+        var result = await response.Content.ReadFromJsonAsync<IEnumerable<TModel>>();
 
         // Assert
-        await AssertGetAllOnSuccessAsync(response);
-    }
-
-    protected virtual Uri ArrangeGetAllUri()
-    {
-        var uri = new Uri(Endpoint, UriKind.Relative);
-
-        return uri;
-    }
-
-    protected virtual async Task AssertGetAllOnSuccessAsync(HttpResponseMessage? response)
-    {
         response.Should().NotBeNull();
-        response!.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var result = await response.Content.ReadFromJsonAsync<IEnumerable<TModel>>();
-        result.Should().NotBeNull().And.BeAssignableTo<IEnumerable<TModel>>();
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        result.Should().NotBeNull();
         result.Should().NotBeEmpty();
+        result.Should().BeAssignableTo<IEnumerable<TModel>>();
     }
 }
