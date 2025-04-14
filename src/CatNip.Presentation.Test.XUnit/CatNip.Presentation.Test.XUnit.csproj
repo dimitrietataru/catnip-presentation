@@ -10,7 +10,7 @@
 
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>CatNip.Presentation.Test.XUnit</PackageId>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <Authors>Dimitrie Tataru</Authors>
     <Company>A C E</Company>
     <Description>Clean Architecture Template - Presentation Abstractions Test (XUnit)</Description>
