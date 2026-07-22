@@ -92,7 +92,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
     protected virtual IFormFile ArrangeImportOnSuccess()
     {
         var stream = new MemoryStream();
-        using var streamWriter = new StreamWriter(stream);
+        using var streamWriter = new StreamWriter(stream, leaveOpen: true);
         streamWriter.Write("Foo Bar");
         streamWriter.Flush();
         stream.Position = 0;
@@ -108,9 +108,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
 
     protected virtual void AssertImportOnSuccess(IActionResult actionResult)
     {
-        actionResult.Should().NotBeNull().And.BeOfType<OkResult>();
-
-        var result = actionResult as OkResult;
+        var result = actionResult.Should().NotBeNull().And.BeOfType<OkResult>().Subject;
         result!.StatusCode.Should().Be((int)HttpStatusCode.OK);
 
         ServiceMock.Verify(
@@ -122,7 +120,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
     protected virtual IFormFile ArrangeImportOnFailure()
     {
         var stream = new MemoryStream();
-        using var streamWriter = new StreamWriter(stream);
+        using var streamWriter = new StreamWriter(stream, leaveOpen: true);
         streamWriter.Write("Foo Bar");
         streamWriter.Flush();
         stream.Position = 0;
@@ -138,9 +136,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
 
     protected virtual void AssertImportOnFailure(IActionResult actionResult)
     {
-        actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>();
-
-        var result = actionResult as BadRequestObjectResult;
+        var result = actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>().Subject;
         result!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         result!.Value.Should().NotBeNull().And.BeOfType<ProblemDetails>();
 
@@ -159,11 +155,9 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
 
     protected virtual void AssertImportOnFileInvalid(IActionResult actionResult)
     {
-        actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>();
-
-        var result = actionResult as BadRequestObjectResult;
-        result!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>();
+        var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
+        var problemDetails = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
+        problemDetails!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
             _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -181,11 +175,9 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
 
     protected virtual void AssertImportOnFileEmpty(IActionResult actionResult)
     {
-        actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>();
-
-        var result = actionResult as BadRequestObjectResult;
-        result!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>();
+        var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
+        var problem = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
+        problem!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
             _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -196,7 +188,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
     protected virtual IFormFile ArrangeImportOnFileNameInvalid()
     {
         var stream = new MemoryStream();
-        using var streamWriter = new StreamWriter(stream);
+        using var streamWriter = new StreamWriter(stream, leaveOpen: true);
         streamWriter.Write("Foo Bar");
         streamWriter.Flush();
         stream.Position = 0;
@@ -207,11 +199,9 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
 
     protected virtual void AssertImportOnFileNameInvalid(IActionResult actionResult)
     {
-        actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>();
-
-        var result = actionResult as BadRequestObjectResult;
-        result!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>();
+        var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
+        var problemDetails = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
+        problemDetails!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
             _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -222,7 +212,7 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
     protected virtual IFormFile ArrangeImportOnFileExtensionInvalid()
     {
         var stream = new MemoryStream();
-        using var streamWriter = new StreamWriter(stream);
+        using var streamWriter = new StreamWriter(stream, leaveOpen: true);
         streamWriter.Write("Foo Bar");
         streamWriter.Flush();
         stream.Position = 0;
@@ -233,11 +223,9 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
 
     protected virtual void AssertImportOnFileExtensionInvalid(IActionResult actionResult)
     {
-        actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>();
-
-        var result = actionResult as BadRequestObjectResult;
-        result!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>();
+        var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
+        var problemDetails = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
+        problemDetails!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
             _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
