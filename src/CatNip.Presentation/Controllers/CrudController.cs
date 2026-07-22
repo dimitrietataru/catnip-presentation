@@ -1,5 +1,6 @@
 using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Services;
+using CatNip.Presentation.Extensions;
 using CatNip.Presentation.Symbols;
 
 namespace CatNip.Presentation.Controllers;
@@ -81,11 +82,7 @@ public abstract class CrudController<TService, TModel, TId> : ControllerBase
     {
         if (!id.Equals(model.Id))
         {
-            return BadRequest(
-                new ProblemDetails
-                {
-                    Detail = "Id mismatch"
-                });
+            return ValidationProblem(ModelState.WithError("id", "Id mismatch."));
         }
 
         await Service.UpdateAsync(id, model, cancellation);

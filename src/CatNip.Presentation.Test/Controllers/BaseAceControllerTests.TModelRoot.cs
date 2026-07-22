@@ -1,3 +1,4 @@
+using CatNip.Domain.ImportExport.Csv;
 using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Query;
 using CatNip.Domain.Query.Filtering;
@@ -6,14 +7,15 @@ using CatNip.Presentation.Controllers;
 
 namespace CatNip.Presentation.Test.Controllers;
 
-public abstract partial class BaseAceControllerTests<TController, TService, TModel, TModelRoot, TId, TFiltering>
-    : BaseAceControllerTests<TController, TService, TModel, TId, TFiltering>
-    where TController : AceController<TService, TModel, TId, TFiltering>
-    where TService : class, IAceService<TModel, TId, TFiltering>
+public abstract partial class BaseAceControllerTests<TController, TService, TModel, TModelRoot, TId, TFiltering, TExchange>
+    : BaseAceControllerTests<TController, TService, TModel, TId, TFiltering, TExchange>
+    where TController : AceController<TService, TModel, TId, TFiltering, TExchange>
+    where TService : class, IAceService<TModel, TId, TFiltering, TExchange>
     where TModel : IModel<TId>
     where TModelRoot : IModel<TId>
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
+    where TExchange : ICsvMappable
 {
     protected override void ArrangeGetAllOnSuccess()
     {

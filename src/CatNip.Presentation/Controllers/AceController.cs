@@ -1,19 +1,27 @@
+using CatNip.Domain.ImportExport;
+using CatNip.Domain.ImportExport.Csv;
 using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Query;
 using CatNip.Domain.Query.Filtering;
 using CatNip.Domain.Query.Sorting.Symbols;
 using CatNip.Domain.Services;
+using CatNip.Presentation.Extensions;
 using CatNip.Presentation.Symbols;
+using Microsoft.AspNetCore.Http;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace CatNip.Presentation.Controllers;
 
 [ApiController]
-public abstract class AceController<TService, TModel, TModelRoot, TId, TFiltering> : AceController<TService, TModel, TId, TFiltering>
-    where TService : IAceService<TModel, TId, TFiltering>
+public abstract class AceController<TService, TModel, TModelRoot, TId, TFiltering, TExchange> : AceController<TService, TModel, TId, TFiltering, TExchange>
+    where TService : IAceService<TModel, TId, TFiltering, TExchange>
     where TModel : IModel<TId>
     where TModelRoot : IModel<TId>
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
+    where TExchange : ICsvMappable
 {
     protected AceController(TService service)
         : base(service)
@@ -37,11 +45,12 @@ public abstract class AceController<TService, TModel, TModelRoot, TId, TFilterin
 }
 
 [ApiController]
-public abstract class AceController<TService, TModel, TId, TFiltering> : CrudController<TService, TModel, TId>
-    where TService : IAceService<TModel, TId, TFiltering>
+public abstract class AceController<TService, TModel, TId, TFiltering, TExchange> : CrudController<TService, TModel, TId>
+    where TService : IAceService<TModel, TId, TFiltering, TExchange>
     where TModel : IModel<TId>
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
+    where TExchange : ICsvMappable
 {
     protected AceController(TService service)
         : base(service)
@@ -71,6 +80,48 @@ public abstract class AceController<TService, TModel, TId, TFiltering> : CrudCon
         int count = await Service.CountAsync(filter, cancellation);
 
         return Ok(count);
+    }
+
+    [HttpPost]
+    [Route(DefaultRoutes.Import)]
+    public virtual async Task<IActionResult> Import([FromForm] IFormFile file, CancellationToken cancellation)
+    {
+        if (file is null)
+        {
+            return ValidationProblem(ModelState.WithError("file", "Invalid import file."));
+        }
+
+        if (file.Length == 0)
+        {
+            return ValidationProblem(ModelState.WithError("file", "Empty import file."));
+        }
+
+        if (string.IsNullOrEmpty(file.FileName))
+        {
+            return ValidationProblem(ModelState.WithError("file", "Invalid import file name."));
+        }
+
+        if (!string.Equals(FileExtensions.Csv, Path.GetExtension(file.FileName), StringComparison.OrdinalIgnoreCase))
+        {
+            return ValidationProblem(ModelState.WithError("file", "Invalid import file extension. Only files with the .csv extension are supported"));
+        }
+
+        using var request = new ImportRequest(file.OpenReadStream(), file.FileName);
+        var response = await Service.ImportAsync(request, cancellation);
+
+        if (!response.IsSuccessful)
+        {
+            var problemDetails = new ProblemDetails
+            {
+                Title = "Failed to import file.",
+                Extensions = response.Errors.ToDictionary(k => k.RowNumber.ToString(CultureInfo.InvariantCulture), v => (object?)v.ErrorMessage),
+                Status = StatusCodes.Status400BadRequest
+            };
+
+            return BadRequest(problemDetails);
+        }
+
+        return Ok();
     }
 
     /// <summary>
