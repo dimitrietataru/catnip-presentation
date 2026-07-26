@@ -4,6 +4,7 @@ using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Query.Filtering;
 using CatNip.Domain.Services;
 using CatNip.Presentation.Controllers;
+using CatNip.Presentation.Models;
 using CatNip.Presentation.Test.Controllers.Abstractions;
 
 namespace CatNip.Presentation.Test.Controllers;
@@ -108,8 +109,13 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
 
     protected virtual void AssertImportOnSuccess(IActionResult actionResult)
     {
-        var result = actionResult.Should().NotBeNull().And.BeOfType<OkResult>().Subject;
+        var result = actionResult.Should().NotBeNull().And.BeOfType<OkObjectResult>().Subject;
         result!.StatusCode.Should().Be((int)HttpStatusCode.OK);
+
+        var importResult = result!.Value.Should().NotBeNull().And.BeOfType<ImportResponseModel>().Subject;
+        importResult!.TotalRows.Should().Be(2);
+        importResult!.CreatedRecords.Should().Be(1);
+        importResult!.UpdatedRecords.Should().Be(1);
 
         ServiceMock.Verify(
             _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Once);

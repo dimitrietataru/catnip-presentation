@@ -6,6 +6,7 @@ using CatNip.Domain.Query.Filtering;
 using CatNip.Domain.Query.Sorting.Symbols;
 using CatNip.Domain.Services;
 using CatNip.Presentation.Extensions;
+using CatNip.Presentation.Models;
 using CatNip.Presentation.Symbols;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
@@ -121,7 +122,14 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
             return BadRequest(problemDetails);
         }
 
-        return Ok();
+        var importResponse = new ImportResponseModel
+        {
+            TotalRows = response.TotalRows,
+            CreatedRecords = response.CreatedRecords,
+            UpdatedRecords = response.UpdatedRecords
+        };
+
+        return Ok(importResponse);
     }
 
     /// <summary>
