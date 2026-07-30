@@ -106,4 +106,40 @@ public abstract class AceControllerTests<TController, TService, TModel, TId, TFi
     {
         await base.GivenImportCsvWhenFileExtensionIsInvalidThenValidationFails();
     }
+
+    [Fact]
+    public override async Task GivenImportExcelWhenSuccessThenImportsData()
+    {
+        await base.GivenImportExcelWhenSuccessThenImportsData();
+    }
+
+    [Fact]
+    public override async Task GivenImportExcelWhenFailureThenReturnsFailure()
+    {
+        await base.GivenImportExcelWhenFailureThenReturnsFailure();
+    }
+
+    [Fact]
+    public override async Task GivenImportExcelWhenFileIsInvalidThenValidationFails()
+    {
+        await base.GivenImportExcelWhenFileIsInvalidThenValidationFails();
+    }
+
+    [Fact]
+    public override async Task GivenImportExcelWhenFileIsEmptyThenValidationFails()
+    {
+        await base.GivenImportExcelWhenFileIsEmptyThenValidationFails();
+    }
+
+    [Fact]
+    public override async Task GivenImportExcelWhenFileNameIsInvalidThenValidationFails()
+    {
+        await base.GivenImportExcelWhenFileNameIsInvalidThenValidationFails();
+    }
+
+    [Fact]
+    public override async Task GivenImportExcelWhenFileExtensionIsInvalidThenValidationFails()
+    {
+        await base.GivenImportExcelWhenFileExtensionIsInvalidThenValidationFails();
+    }
 }

@@ -8,4 +8,11 @@ public interface IAceControllerTests : ICrudControllerTests
     Task GivenImportCsvWhenFileIsEmptyThenValidationFails();
     Task GivenImportCsvWhenFileNameIsInvalidThenValidationFails();
     Task GivenImportCsvWhenFileExtensionIsInvalidThenValidationFails();
+
+    Task GivenImportExcelWhenSuccessThenImportsData();
+    Task GivenImportExcelWhenFailureThenReturnsFailure();
+    Task GivenImportExcelWhenFileIsInvalidThenValidationFails();
+    Task GivenImportExcelWhenFileIsEmptyThenValidationFails();
+    Task GivenImportExcelWhenFileNameIsInvalidThenValidationFails();
+    Task GivenImportExcelWhenFileExtensionIsInvalidThenValidationFails();
 }

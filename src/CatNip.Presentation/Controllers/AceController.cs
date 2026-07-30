@@ -107,6 +107,55 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
         using var request = new ImportRequest(file.OpenReadStream(), file.FileName);
         var response = await Service.ImportCsvAsync(request, cancellation);
 
+        if (!response.IsSuccessful)
+        {
+            var problemDetails = new ProblemDetails
+            {
+                Title = "Failed to import file.",
+                Extensions = response.Errors.ToDictionary(k => k.RowNumber.ToString(CultureInfo.InvariantCulture), v => (object?)v.ErrorMessage),
+                Status = StatusCodes.Status400BadRequest
+            };
+
+            return BadRequest(problemDetails);
+        }
+
+        var importResponse = new ImportResponseModel
+        {
+            TotalRows = response.TotalRows,
+            CreatedRecords = response.CreatedRecords,
+            UpdatedRecords = response.UpdatedRecords
+        };
+
+        return Ok(importResponse);
+    }
+
+    [HttpPost]
+    [Route(DefaultRoutes.ImportExcel)]
+    public virtual async Task<IActionResult> ImportExcel([FromForm] IFormFile file, CancellationToken cancellation)
+    {
+        if (file is null)
+        {
+            return ValidationProblem(ModelState.WithError("file", "Invalid import file."));
+        }
+
+        if (file.Length == 0)
+        {
+            return ValidationProblem(ModelState.WithError("file", "Empty import file."));
+        }
+
+        if (string.IsNullOrEmpty(file.FileName))
+        {
+            return ValidationProblem(ModelState.WithError("file", "Invalid import file name."));
+        }
+
+        var allowedFileExtensions = new List<string> { FileExtensions.Xls, FileExtensions.Xlsx };
+        if (!allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+        {
+            return ValidationProblem(ModelState.WithError("file", "Invalid import file extension. Only files with .xls or .xlsx extension are supported"));
+        }
+
+        using var request = new ImportRequest(file.OpenReadStream(), file.FileName);
+        var response = await Service.ImportExcelAsync(request, cancellation);
 
         if (!response.IsSuccessful)
         {
