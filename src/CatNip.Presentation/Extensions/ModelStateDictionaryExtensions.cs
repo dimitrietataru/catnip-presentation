@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 namespace CatNip.Presentation.Extensions;
 
 internal static class ModelStateDictionaryExtensions

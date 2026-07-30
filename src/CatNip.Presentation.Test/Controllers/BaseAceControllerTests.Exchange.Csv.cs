@@ -1,5 +1,6 @@
 using CatNip.Domain.ImportExport;
 using CatNip.Domain.ImportExport.Csv;
+using CatNip.Domain.ImportExport.Excel;
 using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Query.Filtering;
 using CatNip.Domain.Services;
@@ -16,81 +17,81 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
     where TModel : IModel<TId>
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
-    where TExchange : ICsvMappable
+    where TExchange : ICsvMappable, IExcelMappable
 {
-    public virtual async Task GivenImportWhenSuccessThenImportsData()
+    public virtual async Task GivenImportCsvWhenSuccessThenImportsData()
     {
         // Arrange
-        var formFile = ArrangeImportOnSuccess();
+        var formFile = ArrangeImportCsvOnSuccess();
 
         // Act
-        var result = await Controller.Import(formFile, CancellationToken.None);
+        var result = await Controller.ImportCsv(formFile, CancellationToken.None);
 
         // Assert
-        AssertImportOnSuccess(result);
+        AssertImportCsvOnSuccess(result);
     }
 
-    public virtual async Task GivenImportWhenFailureThenReturnsFailure()
+    public virtual async Task GivenImportCsvWhenFailureThenReturnsFailure()
     {
         // Arrange
-        var formFile = ArrangeImportOnFailure();
+        var formFile = ArrangeImportCsvOnFailure();
 
         // Act
-        var result = await Controller.Import(formFile, CancellationToken.None);
+        var result = await Controller.ImportCsv(formFile, CancellationToken.None);
 
         // Assert
-        AssertImportOnFailure(result);
+        AssertImportCsvOnFailure(result);
     }
 
-    public virtual async Task GivenImportWhenFileIsInvalidThenValidationFails()
+    public virtual async Task GivenImportCsvWhenFileIsInvalidThenValidationFails()
     {
         // Arrange
-        var formFile = ArrangeImportOnFileInvalid();
+        var formFile = ArrangeImportCsvOnFileInvalid();
 
         // Act
-        var result = await Controller.Import(formFile, CancellationToken.None);
+        var result = await Controller.ImportCsv(formFile, CancellationToken.None);
 
         // Assert
-        AssertImportOnFileInvalid(result);
+        AssertImportCsvOnFileInvalid(result);
     }
 
-    public virtual async Task GivenImportWhenFileIsEmptyThenValidationFails()
+    public virtual async Task GivenImportCsvWhenFileIsEmptyThenValidationFails()
     {
         // Arrange
-        var formFile = ArrangeImportOnFileEmpty();
+        var formFile = ArrangeImportCsvOnFileEmpty();
 
         // Act
-        var result = await Controller.Import(formFile, CancellationToken.None);
+        var result = await Controller.ImportCsv(formFile, CancellationToken.None);
 
         // Assert
-        AssertImportOnFileEmpty(result);
+        AssertImportCsvOnFileEmpty(result);
     }
 
-    public virtual async Task GivenImportWhenFileNameIsInvalidThenValidationFails()
+    public virtual async Task GivenImportCsvWhenFileNameIsInvalidThenValidationFails()
     {
         // Arrange
-        var formFile = ArrangeImportOnFileNameInvalid();
+        var formFile = ArrangeImportCsvOnFileNameInvalid();
 
         // Act
-        var result = await Controller.Import(formFile, CancellationToken.None);
+        var result = await Controller.ImportCsv(formFile, CancellationToken.None);
 
         // Assert
-        AssertImportOnFileNameInvalid(result);
+        AssertImportCsvOnFileNameInvalid(result);
     }
 
-    public virtual async Task GivenImportWhenFileExtensionIsInvalidThenValidationFails()
+    public virtual async Task GivenImportCsvWhenFileExtensionIsInvalidThenValidationFails()
     {
         // Arrange
-        var formFile = ArrangeImportOnFileExtensionInvalid();
+        var formFile = ArrangeImportCsvOnFileExtensionInvalid();
 
         // Act
-        var result = await Controller.Import(formFile, CancellationToken.None);
+        var result = await Controller.ImportCsv(formFile, CancellationToken.None);
 
         // Assert
-        AssertImportOnFileExtensionInvalid(result);
+        AssertImportCsvOnFileExtensionInvalid(result);
     }
 
-    protected virtual IFormFile ArrangeImportOnSuccess()
+    protected virtual IFormFile ArrangeImportCsvOnSuccess()
     {
         var stream = new MemoryStream();
         using var streamWriter = new StreamWriter(stream, leaveOpen: true);
@@ -100,14 +101,14 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
         var formFile = new FormFile(stream, 0, stream.Length, "file", "test.csv");
 
         ServiceMock
-            .Setup(_ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(_ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ImportResponse.Success(totalRows: 2, createdRecords: 1, updatedRecords: 1))
             .Verifiable();
 
         return formFile;
     }
 
-    protected virtual void AssertImportOnSuccess(IActionResult actionResult)
+    protected virtual void AssertImportCsvOnSuccess(IActionResult actionResult)
     {
         var result = actionResult.Should().NotBeNull().And.BeOfType<OkObjectResult>().Subject;
         result!.StatusCode.Should().Be((int)HttpStatusCode.OK);
@@ -118,12 +119,12 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
         importResult!.UpdatedRecords.Should().Be(1);
 
         ServiceMock.Verify(
-            _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            _ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Once);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
     }
 
-    protected virtual IFormFile ArrangeImportOnFailure()
+    protected virtual IFormFile ArrangeImportCsvOnFailure()
     {
         var stream = new MemoryStream();
         using var streamWriter = new StreamWriter(stream, leaveOpen: true);
@@ -133,45 +134,45 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
         var formFile = new FormFile(stream, 0, stream.Length, "file", "test.csv");
 
         ServiceMock
-            .Setup(_ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(_ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ImportResponse.Failure(new ImportParseError("Failed..")))
             .Verifiable();
 
         return formFile;
     }
 
-    protected virtual void AssertImportOnFailure(IActionResult actionResult)
+    protected virtual void AssertImportCsvOnFailure(IActionResult actionResult)
     {
         var result = actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>().Subject;
         result!.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         result!.Value.Should().NotBeNull().And.BeOfType<ProblemDetails>();
 
         ServiceMock.Verify(
-            _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+            _ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Once);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
     }
 
-    protected virtual IFormFile ArrangeImportOnFileInvalid()
+    protected virtual IFormFile ArrangeImportCsvOnFileInvalid()
     {
         IFormFile formFile = null!;
 
         return formFile;
     }
 
-    protected virtual void AssertImportOnFileInvalid(IActionResult actionResult)
+    protected virtual void AssertImportCsvOnFileInvalid(IActionResult actionResult)
     {
         var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
         var problemDetails = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
         problemDetails!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
-            _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            _ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
     }
 
-    protected virtual IFormFile ArrangeImportOnFileEmpty()
+    protected virtual IFormFile ArrangeImportCsvOnFileEmpty()
     {
         var stream = new MemoryStream();
         var formFile = new FormFile(stream, 0, 0, "file", "test.csv");
@@ -179,19 +180,19 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
         return formFile;
     }
 
-    protected virtual void AssertImportOnFileEmpty(IActionResult actionResult)
+    protected virtual void AssertImportCsvOnFileEmpty(IActionResult actionResult)
     {
         var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
         var problem = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
         problem!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
-            _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            _ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
     }
 
-    protected virtual IFormFile ArrangeImportOnFileNameInvalid()
+    protected virtual IFormFile ArrangeImportCsvOnFileNameInvalid()
     {
         var stream = new MemoryStream();
         using var streamWriter = new StreamWriter(stream, leaveOpen: true);
@@ -203,19 +204,19 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
         return formFile;
     }
 
-    protected virtual void AssertImportOnFileNameInvalid(IActionResult actionResult)
+    protected virtual void AssertImportCsvOnFileNameInvalid(IActionResult actionResult)
     {
         var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
         var problemDetails = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
         problemDetails!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
-            _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            _ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
     }
 
-    protected virtual IFormFile ArrangeImportOnFileExtensionInvalid()
+    protected virtual IFormFile ArrangeImportCsvOnFileExtensionInvalid()
     {
         var stream = new MemoryStream();
         using var streamWriter = new StreamWriter(stream, leaveOpen: true);
@@ -227,14 +228,14 @@ public abstract partial class BaseAceControllerTests<TController, TService, TMod
         return formFile;
     }
 
-    protected virtual void AssertImportOnFileExtensionInvalid(IActionResult actionResult)
+    protected virtual void AssertImportCsvOnFileExtensionInvalid(IActionResult actionResult)
     {
         var result = actionResult.Should().NotBeNull().And.BeOfType<ObjectResult>().Subject;
         var problemDetails = result!.Value.Should().NotBeNull().And.BeOfType<ValidationProblemDetails>().Subject;
         problemDetails!.Errors.Should().ContainKey("file");
 
         ServiceMock.Verify(
-            _ => _.ImportAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
+            _ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Never);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
     }

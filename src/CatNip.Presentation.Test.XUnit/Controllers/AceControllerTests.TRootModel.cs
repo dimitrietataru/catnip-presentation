@@ -1,4 +1,5 @@
 using CatNip.Domain.ImportExport.Csv;
+using CatNip.Domain.ImportExport.Excel;
 using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Query.Filtering;
 using CatNip.Domain.Services;
@@ -15,7 +16,7 @@ public abstract class AceControllerTests<TController, TService, TModel, TModelRo
     where TModelRoot : IModel<TId>
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
-    where TExchange : ICsvMappable
+    where TExchange : ICsvMappable, IExcelMappable
 {
     [Fact]
     public override async Task GivenGetAllWhenDataExistsThenReturnsData()
@@ -72,38 +73,38 @@ public abstract class AceControllerTests<TController, TService, TModel, TModelRo
     }
 
     [Fact]
-    public override async Task GivenImportWhenSuccessThenImportsData()
+    public override async Task GivenImportCsvWhenSuccessThenImportsData()
     {
-        await base.GivenImportWhenSuccessThenImportsData();
+        await base.GivenImportCsvWhenSuccessThenImportsData();
     }
 
     [Fact]
-    public override async Task GivenImportWhenFailureThenReturnsFailure()
+    public override async Task GivenImportCsvWhenFailureThenReturnsFailure()
     {
-        await base.GivenImportWhenFailureThenReturnsFailure();
+        await base.GivenImportCsvWhenFailureThenReturnsFailure();
     }
 
     [Fact]
-    public override async Task GivenImportWhenFileIsInvalidThenValidationFails()
+    public override async Task GivenImportCsvWhenFileIsInvalidThenValidationFails()
     {
-        await base.GivenImportWhenFileIsInvalidThenValidationFails();
+        await base.GivenImportCsvWhenFileIsInvalidThenValidationFails();
     }
 
     [Fact]
-    public override async Task GivenImportWhenFileIsEmptyThenValidationFails()
+    public override async Task GivenImportCsvWhenFileIsEmptyThenValidationFails()
     {
-        await base.GivenImportWhenFileIsEmptyThenValidationFails();
+        await base.GivenImportCsvWhenFileIsEmptyThenValidationFails();
     }
 
     [Fact]
-    public override async Task GivenImportWhenFileNameIsInvalidThenValidationFails()
+    public override async Task GivenImportCsvWhenFileNameIsInvalidThenValidationFails()
     {
-        await base.GivenImportWhenFileNameIsInvalidThenValidationFails();
+        await base.GivenImportCsvWhenFileNameIsInvalidThenValidationFails();
     }
 
     [Fact]
-    public override async Task GivenImportWhenFileExtensionIsInvalidThenValidationFails()
+    public override async Task GivenImportCsvWhenFileExtensionIsInvalidThenValidationFails()
     {
-        await base.GivenImportWhenFileExtensionIsInvalidThenValidationFails();
+        await base.GivenImportCsvWhenFileExtensionIsInvalidThenValidationFails();
     }
 }

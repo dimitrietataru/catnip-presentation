@@ -1,5 +1,6 @@
 using CatNip.Domain.ImportExport;
 using CatNip.Domain.ImportExport.Csv;
+using CatNip.Domain.ImportExport.Excel;
 using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Query;
 using CatNip.Domain.Query.Filtering;
@@ -8,10 +9,6 @@ using CatNip.Domain.Services;
 using CatNip.Presentation.Extensions;
 using CatNip.Presentation.Models;
 using CatNip.Presentation.Symbols;
-using Microsoft.AspNetCore.Http;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 
 namespace CatNip.Presentation.Controllers;
 
@@ -22,7 +19,7 @@ public abstract class AceController<TService, TModel, TModelRoot, TId, TFilterin
     where TModelRoot : IModel<TId>
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
-    where TExchange : ICsvMappable
+    where TExchange : ICsvMappable, IExcelMappable
 {
     protected AceController(TService service)
         : base(service)
@@ -51,7 +48,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
     where TModel : IModel<TId>
     where TId : IEquatable<TId>
     where TFiltering : IFilteringRequest
-    where TExchange : ICsvMappable
+    where TExchange : ICsvMappable, IExcelMappable
 {
     protected AceController(TService service)
         : base(service)
@@ -84,8 +81,8 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
     }
 
     [HttpPost]
-    [Route(DefaultRoutes.Import)]
-    public virtual async Task<IActionResult> Import([FromForm] IFormFile file, CancellationToken cancellation)
+    [Route(DefaultRoutes.ImportCsv)]
+    public virtual async Task<IActionResult> ImportCsv([FromForm] IFormFile file, CancellationToken cancellation)
     {
         if (file is null)
         {
@@ -104,11 +101,12 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
 
         if (!string.Equals(FileExtensions.Csv, Path.GetExtension(file.FileName), StringComparison.OrdinalIgnoreCase))
         {
-            return ValidationProblem(ModelState.WithError("file", "Invalid import file extension. Only files with the .csv extension are supported"));
+            return ValidationProblem(ModelState.WithError("file", "Invalid import file extension. Only files with .csv extension are supported"));
         }
 
         using var request = new ImportRequest(file.OpenReadStream(), file.FileName);
-        var response = await Service.ImportAsync(request, cancellation);
+        var response = await Service.ImportCsvAsync(request, cancellation);
+
 
         if (!response.IsSuccessful)
         {
