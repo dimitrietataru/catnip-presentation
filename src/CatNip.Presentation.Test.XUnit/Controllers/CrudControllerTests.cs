@@ -9,7 +9,7 @@ public abstract class CrudControllerTests<TController, TService, TModel, TId>
     : BaseCrudControllerTests<TController, TService, TModel, TId>
     where TController : CrudController<TService, TModel, TId>
     where TService : class, ICrudService<TModel, TId>
-    where TModel : IModel<TId>
+    where TModel : ICrudModel<TId>
     where TId : IEquatable<TId>
 {
     [Fact]
@@ -43,26 +43,26 @@ public abstract class CrudControllerTests<TController, TService, TModel, TId>
     }
 
     [Fact]
-    public override async Task GivenUpdateWhenDataExistsThenUpdatesData()
+    public override async Task GivenUpdateByIdWhenDataExistsThenUpdatesData()
     {
-        await base.GivenUpdateWhenDataExistsThenUpdatesData();
+        await base.GivenUpdateByIdWhenDataExistsThenUpdatesData();
     }
 
     [Fact]
-    public override async Task GivenUpdateWhenDataNotFoundThenThrowsException()
+    public override async Task GivenUpdateByIdWhenDataNotFoundThenThrowsException()
     {
-        await base.GivenUpdateWhenDataNotFoundThenThrowsException();
+        await base.GivenUpdateByIdWhenDataNotFoundThenThrowsException();
     }
 
     [Fact]
-    public override async Task GivenDeleteWhenDataExistsThenDeletesData()
+    public override async Task GivenDeleteByIdWhenDataExistsThenDeletesData()
     {
-        await base.GivenDeleteWhenDataExistsThenDeletesData();
+        await base.GivenDeleteByIdWhenDataExistsThenDeletesData();
     }
 
     [Fact]
-    public override async Task GivenDeleteWhenDataNotFoundThenThrowsException()
+    public override async Task GivenDeleteByIdWhenDataNotFoundThenThrowsException()
     {
-        await base.GivenDeleteWhenDataNotFoundThenThrowsException();
+        await base.GivenDeleteByIdWhenDataNotFoundThenThrowsException();
     }
 }

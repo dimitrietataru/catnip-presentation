@@ -3,11 +3,9 @@ using CatNip.Presentation.IntegrationTest.Controllers;
 
 namespace CatNip.Presentation.IntegrationTest.XUnit.Controllers;
 
-public abstract class CrudControllerIntegrationTests<TModel, TModelRoot, TId>
-    : BaseCrudControllerIntegrationTests<TModel, TModelRoot, TId>
-    where TModel : IModel<TId>
-    where TModelRoot : IModel<TId>
-    where TId : IEquatable<TId>
+public abstract class ControllerIntegrationTests<TModel>
+    : BaseControllerIntegrationTests<TModel>
+    where TModel : IModel
 {
     [Fact]
     public override async Task GivenGetAllWhenDataExistsThenReturnsData()

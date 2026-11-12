@@ -13,11 +13,12 @@ using CatNip.Presentation.Symbols;
 namespace CatNip.Presentation.Controllers;
 
 [ApiController]
-public abstract class AceController<TService, TModel, TModelRoot, TId, TFiltering, TExchange> : AceController<TService, TModel, TId, TFiltering, TExchange>
-    where TService : IAceService<TModel, TId, TFiltering, TExchange>
-    where TModel : IModel<TId>
-    where TModelRoot : IModel<TId>
+public abstract class AceController<TService, TModel, TId, TModelRoot, TFiltering, TExchange>
+    : AceController<TService, TModel, TId, TId, TModelRoot, TFiltering, TExchange>
+    where TService : IAceService<TModel, TId, TModelRoot, TFiltering, TExchange>
+    where TModel : IAceModel<TId>
     where TId : IEquatable<TId>
+    where TModelRoot : ICrudModel<TId>
     where TFiltering : IFilteringRequest
     where TExchange : ICsvMappable, IExcelMappable
 {
@@ -25,28 +26,15 @@ public abstract class AceController<TService, TModel, TModelRoot, TId, TFilterin
         : base(service)
     {
     }
-
-    [HttpGet]
-    public override async Task<IActionResult> GetAll(
-        [FromQuery] int? page,
-        [FromQuery] int? size,
-        [FromQuery] string? sortBy,
-        [FromQuery] SortDirection? sortDirection,
-        [FromQuery] TFiltering filter,
-        CancellationToken cancellation)
-    {
-        var request = new QueryRequest<TFiltering>(filter, page, size, sortBy, sortDirection);
-        var result = await Service.GetAsync<TModelRoot>(request, cancellation);
-
-        return Ok(result);
-    }
 }
 
 [ApiController]
-public abstract class AceController<TService, TModel, TId, TFiltering, TExchange> : CrudController<TService, TModel, TId>
-    where TService : IAceService<TModel, TId, TFiltering, TExchange>
-    where TModel : IModel<TId>
+public abstract class AceController<TService, TModel, TId, TTraceId, TModelRoot, TFiltering, TExchange> : CrudController<TService, TModel, TId>
+    where TService : IAceService<TModel, TId, TTraceId, TModelRoot, TFiltering, TExchange>
+    where TModel : IAceModel<TId, TTraceId>
     where TId : IEquatable<TId>
+    where TTraceId : IEquatable<TTraceId>
+    where TModelRoot : ICrudModel<TId>
     where TFiltering : IFilteringRequest
     where TExchange : ICsvMappable, IExcelMappable
 {
@@ -72,8 +60,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
 
     [HttpGet]
     [Route(DefaultRoutes.Count)]
-    public virtual async Task<IActionResult> Count(
-        [FromQuery] TFiltering filter, CancellationToken cancellation)
+    public virtual async Task<IActionResult> Count([FromQuery] TFiltering filter, CancellationToken cancellation)
     {
         int count = await Service.CountAsync(filter, cancellation);
 
@@ -112,7 +99,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
             var problemDetails = new ProblemDetails
             {
                 Title = "Failed to import file.",
-                Extensions = response.Errors.ToDictionary(k => k.RowNumber.ToString(CultureInfo.InvariantCulture), v => (object?)v.ErrorMessage),
+                Extensions = response.Errors.GroupBy(e => e.RowNumber).ToDictionary(g => g.Key.ToString(CultureInfo.InvariantCulture), g => (object?)g.Select(e => e.ErrorMessage).ToArray()),
                 Status = StatusCodes.Status400BadRequest
             };
 
@@ -162,7 +149,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
             var problemDetails = new ProblemDetails
             {
                 Title = "Failed to import file.",
-                Extensions = response.Errors.ToDictionary(k => k.RowNumber.ToString(CultureInfo.InvariantCulture), v => (object?)v.ErrorMessage),
+                Extensions = response.Errors.GroupBy(e => e.RowNumber).ToDictionary(g => g.Key.ToString(CultureInfo.InvariantCulture), g => (object?)g.Select(e => e.ErrorMessage).ToArray()),
                 Status = StatusCodes.Status400BadRequest
             };
 
@@ -180,7 +167,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
     }
 
     /// <summary>
-    ///     Replaced by the <see cref="GetAll"/> action (pagination/sorting/filtering)
+    /// Replaced by the <see cref="GetAll(int?, int?, string?, SortDirection?, TFiltering, CancellationToken)"/> action.
     /// </summary>
     [NonAction]
     public sealed override async Task<IActionResult> GetAll(CancellationToken cancellation)
@@ -189,7 +176,7 @@ public abstract class AceController<TService, TModel, TId, TFiltering, TExchange
     }
 
     /// <summary>
-    ///     Replaced by the <see cref="Count"/> action (filtering)
+    /// Replaced by the <see cref="Count(TFiltering, CancellationToken)"/> action.
     /// </summary>
     [NonAction]
     public sealed override async Task<IActionResult> Count(CancellationToken cancellation)

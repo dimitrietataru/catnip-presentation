@@ -1,15 +1,13 @@
 using CatNip.Domain.Models.Interfaces;
 using CatNip.Domain.Services;
 using CatNip.Presentation.Extensions;
-using CatNip.Presentation.Symbols;
 
 namespace CatNip.Presentation.Controllers;
 
 [ApiController]
-public abstract class CrudController<TService, TModel, TModelRoot, TId> : CrudController<TService, TModel, TId>
+public abstract class CrudController<TService, TModel, TId> : Controller<TService, TModel>
     where TService : ICrudService<TModel, TId>
-    where TModel : IModel<TId>
-    where TModelRoot : IModel<TId>
+    where TModel : ICrudModel<TId>
     where TId : IEquatable<TId>
 {
     protected CrudController(TService service)
@@ -18,48 +16,8 @@ public abstract class CrudController<TService, TModel, TModelRoot, TId> : CrudCo
     }
 
     [HttpGet]
-    public override async Task<IActionResult> GetAll(CancellationToken cancellation)
-    {
-        var result = await Service.GetAllAsync<TModelRoot>(cancellation);
-
-        return Ok(result);
-    }
-}
-
-[ApiController]
-public abstract class CrudController<TService, TModel, TId> : ControllerBase
-    where TService : ICrudService<TModel, TId>
-    where TModel : IModel<TId>
-    where TId : IEquatable<TId>
-{
-    protected CrudController(TService service)
-    {
-        Service = service;
-    }
-
-    protected virtual TService Service { get; init; }
-
-    [HttpGet]
-    public virtual async Task<IActionResult> GetAll(CancellationToken cancellation)
-    {
-        var result = await Service.GetAllAsync(cancellation);
-
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route(DefaultRoutes.Count)]
-    public virtual async Task<IActionResult> Count(CancellationToken cancellation)
-    {
-        int count = await Service.CountAsync(cancellation);
-
-        return Ok(count);
-    }
-
-    [HttpGet]
     [Route("{id}")]
-    public virtual async Task<IActionResult> GetById(
-        [FromRoute] TId id, CancellationToken cancellation)
+    public virtual async Task<IActionResult> GetById([FromRoute] TId id, CancellationToken cancellation)
     {
         var result = await Service.GetByIdAsync(id, cancellation);
 
@@ -67,18 +25,16 @@ public abstract class CrudController<TService, TModel, TId> : ControllerBase
     }
 
     [HttpPost]
-    public virtual async Task<IActionResult> Create(
-        [FromBody] TModel model, CancellationToken cancellation)
+    public override async Task<IActionResult> Create([FromBody] TModel model, CancellationToken cancellation)
     {
         var result = await Service.CreateAsync(model, cancellation);
 
-        return Created(new Uri($"/{result.Id}", UriKind.Relative), result);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
     [HttpPut]
     [Route("{id}")]
-    public virtual async Task<IActionResult> Update(
-        [FromRoute] TId id, [FromBody] TModel model, CancellationToken cancellation)
+    public virtual async Task<IActionResult> Update([FromRoute] TId id, [FromBody] TModel model, CancellationToken cancellation)
     {
         if (!id.Equals(model.Id))
         {
@@ -92,68 +48,28 @@ public abstract class CrudController<TService, TModel, TId> : ControllerBase
 
     [HttpDelete]
     [Route("{id}")]
-    public virtual async Task<IActionResult> Delete(
-        [FromRoute] TId id, CancellationToken cancellation)
+    public virtual async Task<IActionResult> Delete([FromRoute] TId id, CancellationToken cancellation)
     {
         await Service.DeleteAsync(id, cancellation);
 
         return NoContent();
     }
-}
 
-[ApiController]
-public abstract class CrudController<TService, TModel> : ControllerBase
-    where TService : ICrudService<TModel>
-    where TModel : IModel
-{
-    protected CrudController(TService service)
+    /// <summary>
+    /// Replaced by the <see cref="Update(TId, TModel, CancellationToken)"/> action.
+    /// </summary>
+    [NonAction]
+    public sealed override async Task<IActionResult> Update(TModel model, CancellationToken cancellation)
     {
-        Service = service;
+        return await base.Update(model, cancellation);
     }
 
-    protected virtual TService Service { get; init; }
-
-    [HttpGet]
-    public virtual async Task<IActionResult> GetAll(CancellationToken cancellation)
+    /// <summary>
+    /// Replaced by the <see cref="Delete(TId, CancellationToken)"/> action.
+    /// </summary>
+    [NonAction]
+    public sealed override async Task<IActionResult> Delete(TModel model, CancellationToken cancellation)
     {
-        var result = await Service.GetAllAsync(cancellation);
-
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route(DefaultRoutes.Count)]
-    public virtual async Task<IActionResult> Count(CancellationToken cancellation)
-    {
-        int count = await Service.CountAsync(cancellation);
-
-        return Ok(count);
-    }
-
-    [HttpPost]
-    public virtual async Task<IActionResult> Create(
-        [FromBody] TModel model, CancellationToken cancellation)
-    {
-        await Service.CreateAsync(model, cancellation);
-
-        return Created();
-    }
-
-    [HttpPut]
-    public virtual async Task<IActionResult> Update(
-        [FromBody] TModel model, CancellationToken cancellation)
-    {
-        await Service.UpdateAsync(model, cancellation);
-
-        return NoContent();
-    }
-
-    [HttpDelete]
-    public virtual async Task<IActionResult> Delete(
-        [FromBody] TModel model, CancellationToken cancellation)
-    {
-        await Service.DeleteAsync(model, cancellation);
-
-        return NoContent();
+        return await base.Delete(model, cancellation);
     }
 }

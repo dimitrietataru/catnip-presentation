@@ -8,25 +8,39 @@ using CatNip.Presentation.Test.Controllers;
 
 namespace CatNip.Presentation.Test.XUnit.Controllers;
 
-public abstract class AceControllerTests<TController, TService, TModel, TId, TFiltering, TExchange>
-    : BaseAceControllerTests<TController, TService, TModel, TId, TFiltering, TExchange>
-    where TController : AceController<TService, TModel, TId, TFiltering, TExchange>
-    where TService : class, IAceService<TModel, TId, TFiltering, TExchange>
-    where TModel : IModel<TId>
+public abstract class AceControllerTests<TController, TService, TModel, TId, TModelRoot, TFiltering, TExchange>
+    : AceControllerTests<TController, TService, TModel, TId, TId, TModelRoot, TFiltering, TExchange>
+    where TController : AceController<TService, TModel, TId, TModelRoot, TFiltering, TExchange>
+    where TService : class, IAceService<TModel, TId, TModelRoot, TFiltering, TExchange>
+    where TModel : IAceModel<TId>
     where TId : IEquatable<TId>
+    where TModelRoot : ICrudModel<TId>
+    where TFiltering : IFilteringRequest
+    where TExchange : ICsvMappable, IExcelMappable
+{
+}
+
+public abstract class AceControllerTests<TController, TService, TModel, TId, TTraceId, TModelRoot, TFiltering, TExchange>
+    : BaseAceControllerTests<TController, TService, TModel, TId, TTraceId, TModelRoot, TFiltering, TExchange>
+    where TController : AceController<TService, TModel, TId, TTraceId, TModelRoot, TFiltering, TExchange>
+    where TService : class, IAceService<TModel, TId, TTraceId, TModelRoot, TFiltering, TExchange>
+    where TModel : IAceModel<TId, TTraceId>
+    where TId : IEquatable<TId>
+    where TTraceId : IEquatable<TTraceId>
+    where TModelRoot : ICrudModel<TId>
     where TFiltering : IFilteringRequest
     where TExchange : ICsvMappable, IExcelMappable
 {
     [Fact]
-    public override async Task GivenGetAllWhenDataExistsThenReturnsData()
+    public override async Task GivenGetByFilterWhenDataExistsThenReturnsData()
     {
-        await base.GivenGetAllWhenDataExistsThenReturnsData();
+        await base.GivenGetByFilterWhenDataExistsThenReturnsData();
     }
 
     [Fact]
-    public override async Task GivenCountWhenDataExistsThenReturnsCount()
+    public override async Task GivenCountByFilterWhenDataExistsThenReturnsCount()
     {
-        await base.GivenCountWhenDataExistsThenReturnsCount();
+        await base.GivenCountByFilterWhenDataExistsThenReturnsCount();
     }
 
     [Fact]
@@ -48,27 +62,27 @@ public abstract class AceControllerTests<TController, TService, TModel, TId, TFi
     }
 
     [Fact]
-    public override async Task GivenUpdateWhenDataExistsThenUpdatesData()
+    public override async Task GivenUpdateByIdWhenDataExistsThenUpdatesData()
     {
-        await base.GivenUpdateWhenDataExistsThenUpdatesData();
+        await base.GivenUpdateByIdWhenDataExistsThenUpdatesData();
     }
 
     [Fact]
-    public override async Task GivenUpdateWhenDataNotFoundThenThrowsException()
+    public override async Task GivenUpdateByIdWhenDataNotFoundThenThrowsException()
     {
-        await base.GivenUpdateWhenDataNotFoundThenThrowsException();
+        await base.GivenUpdateByIdWhenDataNotFoundThenThrowsException();
     }
 
     [Fact]
-    public override async Task GivenDeleteWhenDataExistsThenDeletesData()
+    public override async Task GivenDeleteByIdWhenDataExistsThenDeletesData()
     {
-        await base.GivenDeleteWhenDataExistsThenDeletesData();
+        await base.GivenDeleteByIdWhenDataExistsThenDeletesData();
     }
 
     [Fact]
-    public override async Task GivenDeleteWhenDataNotFoundThenThrowsException()
+    public override async Task GivenDeleteByIdWhenDataNotFoundThenThrowsException()
     {
-        await base.GivenDeleteWhenDataNotFoundThenThrowsException();
+        await base.GivenDeleteByIdWhenDataNotFoundThenThrowsException();
     }
 
     [Fact]
@@ -81,6 +95,12 @@ public abstract class AceControllerTests<TController, TService, TModel, TId, TFi
     public override async Task GivenImportCsvWhenFailureThenReturnsFailure()
     {
         await base.GivenImportCsvWhenFailureThenReturnsFailure();
+    }
+
+    [Fact]
+    public override async Task GivenImportCsvWhenRowHasMultipleErrorsThenGroupsErrors()
+    {
+        await base.GivenImportCsvWhenRowHasMultipleErrorsThenGroupsErrors();
     }
 
     [Fact]
@@ -117,6 +137,12 @@ public abstract class AceControllerTests<TController, TService, TModel, TId, TFi
     public override async Task GivenImportExcelWhenFailureThenReturnsFailure()
     {
         await base.GivenImportExcelWhenFailureThenReturnsFailure();
+    }
+
+    [Fact]
+    public override async Task GivenImportExcelWhenRowHasMultipleErrorsThenGroupsErrors()
+    {
+        await base.GivenImportExcelWhenRowHasMultipleErrorsThenGroupsErrors();
     }
 
     [Fact]

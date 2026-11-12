@@ -5,7 +5,7 @@ namespace CatNip.Presentation.IntegrationTest.XUnit.Controllers;
 
 public abstract class CrudControllerIntegrationTests<TModel, TId>
     : BaseCrudControllerIntegrationTests<TModel, TId>
-    where TModel : IModel<TId>
+    where TModel : ICrudModel<TId>
     where TId : IEquatable<TId>
 {
     [Fact]

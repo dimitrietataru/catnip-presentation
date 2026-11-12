@@ -5,13 +5,11 @@ using CatNip.Presentation.Test.Controllers;
 
 namespace CatNip.Presentation.Test.XUnit.Controllers;
 
-public abstract class CrudControllerTests<TController, TService, TModel, TModelRoot, TId>
-    : BaseCrudControllerTests<TController, TService, TModel, TModelRoot, TId>
-    where TController : CrudController<TService, TModel, TModelRoot, TId>
-    where TService : class, ICrudService<TModel, TId>
-    where TModel : IModel<TId>
-    where TModelRoot : IModel<TId>
-    where TId : IEquatable<TId>
+public abstract class ControllerTests<TController, TService, TModel>
+    : BaseControllerTests<TController, TService, TModel>
+    where TController : Controller<TService, TModel>
+    where TService : class, IService<TModel>
+    where TModel : IModel
 {
     [Fact]
     public override async Task GivenGetAllWhenDataExistsThenReturnsData()
@@ -23,18 +21,6 @@ public abstract class CrudControllerTests<TController, TService, TModel, TModelR
     public override async Task GivenCountWhenDataExistsThenReturnsCount()
     {
         await base.GivenCountWhenDataExistsThenReturnsCount();
-    }
-
-    [Fact]
-    public override async Task GivenGetByIdWhenDataExistsThenReturnsData()
-    {
-        await base.GivenGetByIdWhenDataExistsThenReturnsData();
-    }
-
-    [Fact]
-    public override async Task GivenGetByIdWhenDataNotFoundThenThrowsException()
-    {
-        await base.GivenGetByIdWhenDataNotFoundThenThrowsException();
     }
 
     [Fact]

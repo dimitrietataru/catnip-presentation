@@ -2,10 +2,12 @@ using CatNip.Domain.Models.Interfaces;
 
 namespace CatNip.Presentation.IntegrationTest.Controllers;
 
-public abstract partial class BaseCrudControllerIntegrationTests<TModel, TId>
-    where TModel : IModel<TId>
-    where TId : IEquatable<TId>
+public abstract class BaseControllerIntegrationTests<TModel>
+    where TModel : IModel
 {
+    protected abstract HttpClient HttpClient { get; }
+    protected abstract string Endpoint { get; }
+
     public virtual async Task GivenGetAllWhenDataExistsThenReturnsData()
     {
         // Arrange
