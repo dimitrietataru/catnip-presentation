@@ -108,12 +108,12 @@ public abstract class BaseAceControllerTests<TController, TService, TModel, TId,
     public virtual async Task GivenImportCsvWhenFailureThenReturnsFailure()
     {
         // Arrange
-        const string Error = "Parse Error";
+        string[] errors = ["Parse Error"];
         using var stream = new MemoryStream("Foo Bar"u8.ToArray());
         var formFile = new FormFile(stream, 0, stream.Length, "file", "test.csv");
         ServiceMock
             .Setup(_ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ImportResponse.Failure(new ImportParseError(Error)))
+            .ReturnsAsync(ImportResponse.Failure(new ImportParseError(errors[0])))
             .Verifiable();
 
         // Act
@@ -123,7 +123,7 @@ public abstract class BaseAceControllerTests<TController, TService, TModel, TId,
         var result = actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>().Subject;
         result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         var problemDetails = result.Value.Should().NotBeNull().And.BeOfType<ProblemDetails>().Subject;
-        problemDetails.Extensions.Should().ContainKey("-1").WhoseValue.Should().BeEquivalentTo(Error);
+        problemDetails.Extensions.Should().ContainKey("-1").WhoseValue.Should().BeEquivalentTo(errors);
         ServiceMock.Verify(_ => _.ImportCsvAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Once);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
@@ -255,12 +255,12 @@ public abstract class BaseAceControllerTests<TController, TService, TModel, TId,
     public virtual async Task GivenImportExcelWhenFailureThenReturnsFailure()
     {
         // Arrange
-        const string Error = "Parse Error";
+        string[] errors = ["Parse Error"];
         using var stream = new MemoryStream("Foo Bar"u8.ToArray());
         var formFile = new FormFile(stream, 0, stream.Length, "file", "test.xlsx");
         ServiceMock
             .Setup(_ => _.ImportExcelAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ImportResponse.Failure(new ImportParseError(Error)))
+            .ReturnsAsync(ImportResponse.Failure(new ImportParseError(errors[0])))
             .Verifiable();
 
         // Act
@@ -270,7 +270,7 @@ public abstract class BaseAceControllerTests<TController, TService, TModel, TId,
         var result = actionResult.Should().NotBeNull().And.BeOfType<BadRequestObjectResult>().Subject;
         result.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         var problemDetails = result.Value.Should().NotBeNull().And.BeOfType<ProblemDetails>().Subject;
-        problemDetails.Extensions.Should().ContainKey("-1").WhoseValue.Should().BeEquivalentTo(Error);
+        problemDetails.Extensions.Should().ContainKey("-1").WhoseValue.Should().BeEquivalentTo(errors);
         ServiceMock.Verify(_ => _.ImportExcelAsync(It.IsAny<ImportRequest>(), It.IsAny<CancellationToken>()), Times.Once);
         ServiceMock.VerifyNoOtherCalls();
         ServiceMock.VerifyAll();
